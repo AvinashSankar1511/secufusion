@@ -5,7 +5,8 @@ import './index.css';
 import App from './App.jsx';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Scanning from "./pages/scanning";
+import Scanning from "./pages/Scanning";
+import ScanResultsPage from './pages/ScanResultsPage.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,6 +16,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} /> 
         <Route path="/scanning" element={<Scanning/>}/> 
+        <Route path="/output"   element={<ScanResultsPage/>}/>
+        
       </Routes>
     </Router>
   </StrictMode>

@@ -109,21 +109,21 @@ const App = () => {
             <p>Powered by industry-leading security frameworks and AI intelligence</p>
             
             <div class="features-grid">
-                <div class="feature-card">
+                <a href="https://www.zaproxy.org/" class="feature-card">
                     <div class="feature-icon">
                         <i>O</i>
                     </div>
                     <h3 >OWASP ZAP Integration</h3>
                     <p className="content">Leverages the power of OWASP ZAP to identify security vulnerabilities using its comprehensive scanning engine.</p>
-                </div>
+                </a>
                 
-                <div class="feature-card">
+                <a href="https://portswigger.net/" class="feature-card">
                     <div class="feature-icon">
                         <i>B</i>
                     </div>
                     <h3>Burp Suite Compatibility</h3>
                     <p>Seamlessly integrates with Burp Suite for advanced penetration testing and security assessment capabilities.</p>
-                </div>
+                </a>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
