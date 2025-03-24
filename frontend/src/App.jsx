@@ -152,7 +152,7 @@ const App = () => {
                 </a>
                 
                 <div class="feature-card">
-                    <div class="feature-icon" onClick={scrollToFalsePositives}>
+                    <div class="feature-icon" >
                         <i>Fp</i>
                     </div>
                     <h3>False Positive Detection</h3>

@@ -5,16 +5,17 @@ const axios = require('axios')
 const http = require('http');
 const { initalizeSocket, sendMessageToSocketId } = require('./socket');
 const server = http.createServer(app);
+const dotenv = require('dotenv');
 const fs = require('fs')
 app.use(cors());
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
+dotenv.config();
 
 initalizeSocket(server);
 
-const ZAP_API_BASE = 'http://localhost:8080'; // ZAP running on localhost with default port
-const API_KEY = '7lvda92ob05e4veflk94qjgv45'; // Replace with your actual ZAP API key
+const ZAP_API_BASE = 'http://localhost:8080';
+const API_KEY = process.env.API_KEY; // ZAP running on localhost with default port
 var TARGET_URL = ""
 
 let lastMessageId = 0; // Track last fetched message
