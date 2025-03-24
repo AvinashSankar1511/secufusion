@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link} from "react-router-dom";
 import './ScanResultsPage.css';
 
 const ScanResultsPage = ({ scanData = null }) => {
@@ -211,19 +212,28 @@ const ScanResultsPage = ({ scanData = null }) => {
       <div className="scan-results-page">
         <div className="scan-results-container">
           <div className="header-navigation">
-            <button className="back-button" onClick={handleBackToHome}>
-              <span className="back-icon">←</span> Back to Home
-            </button>
+            <Link to={'/'}>
+              <button className="back-button">
+                <span className="back-icon">←</span> Back to Home
+              </button>
+            </Link>
             <h1>SecuFusion Scan Results</h1>
           </div>
+  
+          {/* Centered Loader */}
           <div className="loading">
-            <div className="loading-spinner"></div>
+            <div className="three-body">
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+            </div>
             <p>Analyzing scan results...</p>
           </div>
         </div>
       </div>
     );
   }
+  
 
   if (error) {
     return (
@@ -250,9 +260,9 @@ const ScanResultsPage = ({ scanData = null }) => {
     <div className="scan-results-page">
       <div className="scan-results-container">
         <div className="header-navigation">
-          <button className="back-button" onClick={handleBackToHome}>
-            <span className="back-icon">←</span> Back to Home
-          </button>
+        <Link to={'/'}><button className="back-button">
+            <span className="back-icon">←</span> Back to Home 
+          </button></Link>
           <h1>SecuFusion Scan Results</h1>
         </div>
 

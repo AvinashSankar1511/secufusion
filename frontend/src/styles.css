@@ -522,3 +522,10 @@ body {
     color: #a0a0a0;
     line-height: 1.6;
 }
+.false-positives {
+  padding: 80px;
+  background-color: #1a2035;
+  color: white;
+  border-radius: 10px;
+  margin-top: -50px;
+}

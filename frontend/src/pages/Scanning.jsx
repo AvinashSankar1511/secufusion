@@ -80,14 +80,11 @@ const Scanning = () => {
 
         {/* Show Cube Loader while scanning is in progress */}
         {!scanComplete && (
-          <div className="cube-loader">
-            <div className="cube-wrapper">
-              {[...Array(4)].map((_, i) => (
-                <span key={i} className="cube-span" style={{ '--i': i }}></span>
-              ))}
+          <div className="loading-container">
+            <div className="loader">
+            <span></span>
             </div>
-            <div className="cube-top"></div>
-          </div>
+        </div>
         )}
 
         {/* Show Scan Results when completed */}

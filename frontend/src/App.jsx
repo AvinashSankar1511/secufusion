@@ -6,15 +6,23 @@ import Ellip from "./assets/images/Ellipse 1.png";
 import Zap from "./assets/images/zap (1).png";
 import Burb from "./assets/images/burb.png";
 import { FaArrowRight } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate } from "react-router-dom";
 
 
 const App = () => {
+  const navigate = useNavigate();
   
   const nextSectionRef = useRef(null);
 
   const handleScroll = (sectionId) => {
+    
     const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  const scrollToFalsePositives = () => {
+    const section = document.getElementById("false-positives-section");
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
@@ -106,6 +114,7 @@ const App = () => {
       <section class="features-section" id="features">
         <div class="container">
             <h2>Advanced Features</h2>
+            
             <p>Powered by industry-leading security frameworks and AI intelligence</p>
             
             <div class="features-grid">
@@ -126,7 +135,7 @@ const App = () => {
                 </a>
                 
                 <div class="feature-card">
-                    <div class="feature-icon">
+                    <div class="feature-icon" onClick={scrollToFalsePositives}>
                         <i>Fp</i>
                     </div>
                     <h3>False Positive Detection</h3>
@@ -135,6 +144,7 @@ const App = () => {
             </div>
         </div>
     </section>
+   
      
     </div>
   );
