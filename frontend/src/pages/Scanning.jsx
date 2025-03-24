@@ -1,17 +1,17 @@
+
 import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { SocketDataContext } from '../../context/SocketContext';
 const Scanning = () => {
-    const { socket } = useContext(SocketDataContext);
-    const [progress, setprogress] = useState("Loading Scan...");
-    const [message, setmessage] = useState("")
-    socket.on('progress', (data) => {
-        
-        setprogress(data);
-      })
-    socket.on('newZapMessages',(data)=>{
-      setmessage(data);
-    })
+  const { socket } = useContext(SocketDataContext);
+  const [progress, setprogress] = useState("Loading Scan...");
+  const [message, setmessage] = useState("")
+  socket.on('progress', (data) => {
+    setprogress(data);
+  })
+  socket.on('newZapMessages', (data) => {
+    setmessage(data);
+  })
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
       {/* Bouncing Ball Animation */}
@@ -20,7 +20,7 @@ const Scanning = () => {
         animate={{ y: [0, -20, 0] }}
         transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
       />
-      
+
       {/* Loading Text Animation */}
       <motion.h1
         className="mt-5 text-2xl font-bold"
@@ -36,7 +36,6 @@ const Scanning = () => {
       >
         {message}
       </motion.h1>
-
     </div>
   );
 };

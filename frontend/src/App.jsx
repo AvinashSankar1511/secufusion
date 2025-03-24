@@ -6,12 +6,12 @@ import Ellip from "./assets/images/Ellipse 1.png";
 import Zap from "./assets/images/zap (1).png";
 import Burb from "./assets/images/burb.png";
 import { FaArrowRight } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 import Scanning from "./pages/Scanning"
 import axios from 'axios'
 
 const App = () => {
-
+  const navigate = useNavigate();
   const nextSectionRef = useRef(null);
   const [url, seturl] = useState("");
   const [isLoading, setisLoading] = useState(false)
@@ -24,7 +24,7 @@ const App = () => {
         url: url
       });
       setisLoading(false);
-      console.log(response.data);
+      navigate('/output', { state: { scanData: response.data } });
     } catch (error) {
       console.log(error);
     }
@@ -129,34 +129,34 @@ const App = () => {
 
       <section class="features-section" id="features">
         <div class="container">
-          <h2>Advanced Features</h2>
-          <p>Powered by industry-leading security frameworks and AI intelligence</p>
-
-          <div class="features-grid">
-            <div class="feature-card">
-              <div class="feature-icon">
-                <i>O</i>
-              </div>
-              <h3 >OWASP ZAP Integration</h3>
-              <p className="content">Leverages the power of OWASP ZAP to identify security vulnerabilities using its comprehensive scanning engine.</p>
+            <h2>Advanced Features</h2>
+            <p>Powered by industry-leading security frameworks and AI intelligence</p>
+            
+            <div class="features-grid">
+                <a href="https://www.zaproxy.org/" class="feature-card">
+                    <div class="feature-icon">
+                        <i>O</i>
+                    </div>
+                    <h3 >OWASP ZAP Integration</h3>
+                    <p className="content">Leverages the power of OWASP ZAP to identify security vulnerabilities using its comprehensive scanning engine.</p>
+                </a>
+                
+                <a href="https://portswigger.net/" class="feature-card">
+                    <div class="feature-icon">
+                        <i>B</i>
+                    </div>
+                    <h3>Burp Suite Compatibility</h3>
+                    <p>Seamlessly integrates with Burp Suite for advanced penetration testing and security assessment capabilities.</p>
+                </a>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i>Fp</i>
+                    </div>
+                    <h3>False Positive Detection</h3>
+                    <p>Our proprietary model continuously learns and adapts to new threats, providing real-time false positive detection.</p>
+                </div>
             </div>
-
-            <div class="feature-card">
-              <div class="feature-icon">
-                <i>B</i>
-              </div>
-              <h3>Burp Suite Compatibility</h3>
-              <p>Seamlessly integrates with Burp Suite for advanced penetration testing and security assessment capabilities.</p>
-            </div>
-
-            <div class="feature-card">
-              <div class="feature-icon">
-                <i>Fp</i>
-              </div>
-              <h3>False Positive Detection</h3>
-              <p>Our proprietary model continuously learns and adapts to new threats, providing real-time false positive detection.</p>
-            </div>
-          </div>
         </div>
       </section>
 
