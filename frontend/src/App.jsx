@@ -1,18 +1,40 @@
-import React, { useRef } from "react"; 
-import "./styles.css"; 
+import React, { useRef, useState } from "react";
+import "./styles.css";
 import Group4 from "./assets/images/Group 4.png";
 import Img1 from "./assets/images/img1.png";
 import Ellip from "./assets/images/Ellipse 1.png";
 import Zap from "./assets/images/zap (1).png";
 import Burb from "./assets/images/burb.png";
 import { FaArrowRight } from "react-icons/fa";
-import { Link ,useNavigate } from "react-router-dom";
-
+import { Link ,useNavigate} from "react-router-dom";
+import Scanning from "./pages/Scanning"
+import axios from 'axios'
 
 const App = () => {
   const navigate = useNavigate();
-  
   const nextSectionRef = useRef(null);
+  const [url, seturl] = useState("");
+  const [isLoading, setisLoading] = useState(false)
+  async function scanEvent(e) {
+    e.preventDefault();
+    setisLoading(true)
+
+    try {
+      const response = await axios.post("http://localhost:5500/zapscan", {
+        url: url
+      });
+      setisLoading(false);
+      navigate('/output', { state: { scanData: response.data } });
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+  if (isLoading) {
+    return (
+      <Scanning/>
+    )
+  }
 
   const handleScroll = (sectionId) => {
     
@@ -21,21 +43,15 @@ const App = () => {
       section.scrollIntoView({ behavior: "smooth" });
     }
   };
-  const scrollToFalsePositives = () => {
-    const section = document.getElementById("false-positives-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-  
+
   return (
     <div className="container">
       {/* Navbar */}
       <nav className="navbar">
-      <img src={Group4} alt="Your Image" className="image-style"/>
+        <img src={Group4} alt="Your Image" className="image-style" />
 
-      
-      <div className="nav-links">
+
+        <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/tools">Tools</Link>
           <Link to="#features" onClick={() => handleScroll("features")}>Features</Link>
@@ -45,58 +61,59 @@ const App = () => {
 
       {/* Hero Section */}
       <header className="hero">
-    <h1>Transform Your <br />
-    Web Security with<br /><span>SecuFusion</span> </h1>
-    
-    <div className="image-wrapper">
-        {/* Background Gradient Image */}
-        <img src={Ellip} className="image2-style" alt="Gradient Background" />
+        <h1>Transform Your <br />
+          Web Security with<br /><span>SecuFusion</span> </h1>
 
-        {/* Foreground Image */}
-        <img src={Img1} className="image1-style" alt="Foreground" />
-    </div> 
-    <div class="cyber-dots dots-1"></div>
-    <div class="cyber-dots dots-2"></div>
-</header>
+        <div className="image-wrapper">
+          {/* Background Gradient Image */}
+          <img src={Ellip} className="image2-style" alt="Gradient Background" />
 
-      <header className ="content">
-      <p>
-        In today’s digital landscape, cyber threats are 
-        evolving faster than ever, leaving organizations 
-        vulnerable to attacks. SecuFusion is an advanced 
-        cybersecurity platform designed to detect, 
-        analyze, and mitigate security vulnerabilities with 
-        precision.
+          {/* Foreground Image */}
+          <img src={Img1} className="image1-style" alt="Foreground" />
+        </div>
+        <div class="cyber-dots dots-1"></div>
+        <div class="cyber-dots dots-2"></div>
+      </header>
+
+      <header className="content">
+        <p>
+          In today’s digital landscape, cyber threats are
+          evolving faster than ever, leaving organizations
+          vulnerable to attacks. SecuFusion is an advanced
+          cybersecurity platform designed to detect,
+          analyze, and mitigate security vulnerabilities with
+          precision.
         </p>
         <div className="hero-buttons">
-        <button className="btn btn-primary glow-effect" onClick={() => handleScroll("scan")}>Get Started</button>
-        <button className="btn1 btn-outline" >Learn More</button>
+          <button className="btn btn-primary glow-effect" onClick={() => handleScroll("scan")}>Get Started</button>
+          <button className="btn1 btn-outline" >Learn More</button>
         </div>
-        </header>
+      </header>
 
-        <section id="scan" className="url-scanner">
-     
+      <section id="scan" className="url-scanner">
+
         <h2>Smart Security <br /> Starts Here</h2>
         <p>Our AI-powered scanner performs in-depth security assessments, identifying potential threats,<br />
-           misconfigurations, and weaknesses in your web application. Ensure your site's safety with <br /></p>
-       {/*<div className="input-container">
+          misconfigurations, and weaknesses in your web application. Ensure your site's safety with <br /></p>
+        {/*<div className="input-container">
       <input type="text" placeholder="https://" className="custom-input" />
       <button type="submit" className="input-button">
         <FaArrowRight />
       </button>
     </div>*/}
-    <div className="scanner-form-container">
-      <div className="scanner-box">
+        <div className="scanner-form-container">
+          <div className="scanner-box">
             <form className="scanner-form">
-              <input 
-                type="url" 
-                className="scanner-input" 
-                placeholder="https://example.com"  
+              <input
+                type="url"
+                onChange={(e)=>seturl(e.target.value)}
+                className="scanner-input"
+                placeholder="https://example.com"
               />
-              <Link to={'/scanning'}><button type="submit" className="analyze-btn" >Analyze</button></Link>
+              <Link to={'/scanning'}><button type="submit" className="analyze-btn"  onClick={scanEvent} >Analyze</button></Link>
             </form>
           </div>
-          </div>
+        </div>
       </section>
 
       {/* <section className="features">
@@ -110,7 +127,7 @@ const App = () => {
           <img src={Burb} alt="Burp Suite" />
         </div>
       </section> */}
-      
+
       <section class="features-section" id="features">
         <div class="container">
             <h2>Advanced Features</h2>
@@ -143,9 +160,8 @@ const App = () => {
                 </div>
             </div>
         </div>
-    </section>
-   
-     
+      </section>
+
     </div>
   );
 };

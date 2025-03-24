@@ -1,170 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Link} from "react-router-dom";
+import { useLocation, useNavigate } from 'react-router-dom';
 import './ScanResultsPage.css';
 
-const ScanResultsPage = ({ scanData = null }) => {
+const ScanResultsPage = () => {
+  const navigator = useNavigate();
+  const location = useLocation();
+  const scanData = location.state?.scanData?.results || null;
   const [vulnerabilities, setVulnerabilities] = useState([]);
+  const [vuln, setvuln] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  console.log("Received scanData:", scanData);
+
   useEffect(() => {
-    // If scanData is provided directly as a prop, use it
-    if (scanData) {
-      parseZapReport(scanData);
+    if (!scanData) {
+      setError("No scan data available.");
+      setIsLoading(false);
       return;
     }
 
-    // Otherwise, simulate loading data from an API or file
-    setIsLoading(true);
-    // This is a simulated API call - in a real app, you'd fetch the actual data
-    setTimeout(() => {
-      // Sample ZAP JSON data structure
-      const sampleData = {
-        site: "https://example.secufusion.com",
-        scanDate: "2025-03-19",
-        scanTime: "11:23:45",
-        vulnerabilities: [
-          {
-            alert: "Cross-Site Scripting (XSS)",
-            risk: "High",
-            description: "Client-side scripts can be injected into web pages viewed by other users.",
-            solution: "Validate all input and encode output before rendering to the page.",
-            evidence: "<script>alert('XSS')</script>",
-            owasp_category: "A3:2021-Injection",
-            reference: "https://owasp.org/www-community/attacks/xss/",
-            prediction: 0
-          },
-          {
-            alert: "SQL Injection",
-            risk: "High",
-            description: "SQL statements can be executed through the application's inputs.",
-            solution: "Use parameterized queries or prepared statements.",
-            evidence: "1' OR '1'='1",
-            owasp_category: "A3:2021-Injection",
-            reference: "https://owasp.org/www-community/attacks/SQL_Injection",
-            prediction: 0
-          },
-          {
-            alert: "Insecure Direct Object References",
-            risk: "Medium",
-            description: "Direct access to objects without proper authorization checks.",
-            solution: "Implement proper access controls and validate user permissions.",
-            evidence: "/api/user/123/data",
-            owasp_category: "A1:2021-Broken Access Control",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A5-Broken_Access_Control",
-            prediction: 0
-          },
-          {
-            alert: "Missing HTTP Strict Transport Security",
-            risk: "Medium",
-            description: "HSTS header is not set to force secure connections.",
-            solution: "Add the HSTS header to all responses.",
-            evidence: "HTTP/1.1 200 OK\nContent-Type: text/html",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 0
-          },
-          {
-            alert: "Open Port 8080",
-            risk: "Low",
-            description: "Port 8080 is open and potentially accessible.",
-            solution: "Close unused ports or restrict access with firewall rules.",
-            evidence: "Port 8080 (HTTP Alternate) is open",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 1
-          },
-          {
-            alert: "Cookie Without Secure Flag",
-            risk: "Low",
-            description: "Cookies are transmitted over unencrypted connections.",
-            solution: "Set the 'secure' flag on all cookies.",
-            evidence: "Set-Cookie: sessionid=abc123; path=/",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 0
-          },
-          {
-            alert: "Content Security Policy Not Implemented",
-            risk: "Medium",
-            description: "CSP header is not set to restrict content sources.",
-            solution: "Implement a Content Security Policy header.",
-            evidence: "HTTP/1.1 200 OK\nContent-Type: text/html",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 0
-          },
-          {
-            alert: "SSL Certificate Expiration Warning",
-            risk: "Low",
-            description: "SSL certificate will expire in 30 days.",
-            solution: "Renew the SSL certificate before expiration.",
-            evidence: "Certificate Expiration: 2025-04-19",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 1
-          },
-          {
-            alert: "Vulnerable JavaScript Library",
-            risk: "Medium",
-            description: "Using an outdated library with known vulnerabilities.",
-            solution: "Update to the latest version of the library.",
-            evidence: "jquery-1.8.3.min.js",
-            owasp_category: "A6:2021-Vulnerable and Outdated Components",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities",
-            prediction: 0
-          },
-          {
-            alert: "Missing X-Content-Type-Options Header",
-            risk: "Low",
-            description: "The X-Content-Type-Options header is not set.",
-            solution: "Add 'X-Content-Type-Options: nosniff' header.",
-            evidence: "HTTP/1.1 200 OK\nContent-Type: text/html",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 1
-          },
-          {
-            alert: "Insecure Cross-Origin Resource Sharing",
-            risk: "Medium",
-            description: "CORS policy allows requests from any origin.",
-            solution: "Restrict CORS to trusted domains only.",
-            evidence: "Access-Control-Allow-Origin: *",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 0
-          },
-          {
-            alert: "Directory Listing Enabled",
-            risk: "Low",
-            description: "Directory listing is enabled on the server.",
-            solution: "Disable directory listing in the server configuration.",
-            evidence: "Index of /assets/",
-            owasp_category: "A5:2021-Security Misconfiguration",
-            reference: "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A6-Security_Misconfiguration",
-            prediction: 1
-          }
-        ]
-      };
-      parseZapReport(sampleData);
-    }, 1500);
+    parseZapReport(scanData);
   }, [scanData]);
 
   const parseZapReport = (data) => {
     try {
-      if (!data || !data.vulnerabilities) {
+      if (!data || !Array.isArray(data)) {
         throw new Error("Invalid or empty ZAP report data");
       }
-      
-      setVulnerabilities(data.vulnerabilities);
-      setIsLoading(false);
+
+      setVulnerabilities(data);
+      setvuln(data);
     } catch (err) {
       setError("Failed to parse ZAP report: " + err.message);
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const getRiskClass = (risk) => {
+  const getRiskClass = (risk = '') => {
     switch (risk.toLowerCase()) {
       case 'high': return 'risk-high';
       case 'medium': return 'risk-medium';
@@ -174,53 +48,360 @@ const ScanResultsPage = ({ scanData = null }) => {
   };
 
   const handleDownloadReport = () => {
-    // Create a formatted report as JSON
-    const reportData = JSON.stringify({
-      scanDate: new Date().toISOString(),
-      vulnerabilities: vulnerabilities.map(v => ({
-        name: v.alert,
-        risk: v.risk,
-        description: v.description,
-        solution: v.solution,
-        isValid: v.prediction === 0,
-        owaspCategory: v.owasp_category
-      }))
-    }, null, 2);
-    
-    // Create a blob and trigger download
-    const blob = new Blob([reportData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `secufusion-scan-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    import('jspdf').then(({ default: jsPDF }) => {
+      // Initialize the PDF document
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pageWidth - (margin * 2);
+
+      // Add styling
+      const colors = {
+        title: [41, 128, 185], // Blue
+        subheading: [44, 62, 80], // Dark blue
+        truePositive: [192, 57, 43], // Red for true positives (prediction = 0)
+        falsePositive: [39, 174, 96], // Green for false positives (prediction = 1)
+        high: [192, 57, 43], // Red
+        medium: [211, 84, 0], // Orange
+        low: [39, 174, 96] // Green
+      };
+
+      // Separate vulnerabilities by prediction
+      const truePositives = vulnerabilities.filter(v => v.prediction === 0);
+      const falsePositives = vulnerabilities.filter(v => v.prediction === 1);
+
+      // Track positions for bookmarks/links
+      let truePositivesPage = 1;
+      let truePositivesY = 0;
+      let falsePositivesPage = 1;
+      let falsePositivesY = 0;
+
+      // Track current position and page
+      let y = margin;
+      let currentPage = 1;
+
+      // Add header & logo
+      const addHeader = () => {
+        // Add page header with blue background
+        doc.setFillColor(41, 128, 185);
+        doc.rect(0, 0, pageWidth, 20, 'F');
+
+        // Add title text
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('SecuFusion Scan Report', margin, 14);
+
+        // Add date on the right
+        const dateText = `Scan Date: ${new Date().toLocaleString()}`;
+        const dateWidth = doc.getTextWidth(dateText);
+        doc.setFontSize(10);
+        doc.text(dateText, pageWidth - margin - dateWidth, 14);
+
+        // Reset for content
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+
+        y = 30; // Set position after header
+      };
+
+      // Function to check if we need a new page
+      const checkForNewPage = (requiredSpace) => {
+        if (y + requiredSpace > pageHeight - margin) {
+          doc.addPage();
+          currentPage++;
+          addHeader();
+          return true;
+        }
+        return false;
+      };
+
+      // Start with header
+      addHeader();
+
+      // Add scan summary heading
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(colors.subheading[0], colors.subheading[1], colors.subheading[2]);
+      doc.text('Scan Summary', margin, y);
+      y += 10;
+
+      // Add summary box
+      doc.setFillColor(245, 245, 245);
+      doc.rect(margin, y, contentWidth, 30, 'F');
+
+      // Add summary content
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Total Issues: ${vulnerabilities.length}`, margin + 5, y + 10);
+
+      // True Positives Count with proper spacing
+      doc.setTextColor(colors.truePositive[0], colors.truePositive[1], colors.truePositive[2]);
+      doc.text(`True Positives: ${truePositives.length}`, pageWidth / 2, y + 10);
+
+      // False Positives Count with proper spacing to ensure it's not cut off
+      doc.setTextColor(colors.falsePositive[0], colors.falsePositive[1], colors.falsePositive[2]);
+      doc.text(`False Positives: ${falsePositives.length}`, pageWidth / 2, y + 20);
+
+      // Reset text color
+      doc.setTextColor(0, 0, 0);
+
+      // Add links to sections inside the summary box
+      doc.setTextColor(colors.truePositive[0], colors.truePositive[1], colors.truePositive[2]);
+      // doc.text("1. True Positives", margin + 5, y + 20);
+
+      doc.setTextColor(colors.falsePositive[0], colors.falsePositive[1], colors.falsePositive[2]);
+      const linkXPos = doc.getTextWidth("1. True Positives") + margin + 15;
+      // doc.text("2. False Positives", linkXPos, y + 20);
+
+      // Move position down after summary
+      y += 40;
+
+      // Add table of contents header
+      doc.setTextColor(colors.subheading[0], colors.subheading[1], colors.subheading[2]);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Table of Contents', margin, y);
+      y += 10;
+
+      // Add table of contents items with proper spacing
+      doc.setFontSize(12);
+      doc.setTextColor(colors.truePositive[0], colors.truePositive[1], colors.truePositive[2]);
+      doc.text("1. True Positives", margin + 5, y);
+      // Store this position for linking later
+      const tocTruePositivesY = y;
+
+      y += 8;
+
+      doc.setTextColor(colors.falsePositive[0], colors.falsePositive[1], colors.falsePositive[2]);
+      doc.text("2. False Positives", margin + 5, y);
+      // Store this position for linking later
+      const tocFalsePositivesY = y;
+
+      y += 20;
+
+      // Now add true positives section
+      if (truePositives.length > 0) {
+        checkForNewPage(20);
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(colors.truePositive[0], colors.truePositive[1], colors.truePositive[2]);
+        doc.text('1. True Positives', margin, y);
+
+        // Store location for links
+        truePositivesPage = currentPage;
+        truePositivesY = y;
+
+        y += 10;
+
+        // Render true positives
+        truePositives.forEach((v, index) => {
+          // Check if we need a new page
+          checkForNewPage(90);
+
+          // Background for each vulnerability
+          doc.setFillColor(245, 245, 245);
+          doc.roundedRect(margin, y, contentWidth, 75, 3, 3, 'F');
+
+          // Title with colored background
+          doc.setFillColor(colors.truePositive[0], colors.truePositive[1], colors.truePositive[2]);
+          doc.roundedRect(margin, y, contentWidth, 10, 3, 3, 'F');
+
+          // Title text
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text(`Vulnerability ${index + 1}: ${v.alert}`, margin + 5, y + 7);
+          y += 15;
+
+          // Content
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Risk:', margin + 5, y);
+          doc.setFont('helvetica', 'normal');
+
+          // Color for risk level
+          let riskColor = colors.low;
+          if (v.risk === 'High') riskColor = colors.high;
+          else if (v.risk === 'Medium') riskColor = colors.medium;
+
+          doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
+          doc.text(v.risk, margin + 30, y);
+          y += 8;
+
+          doc.setTextColor(0, 0, 0);
+          doc.setFont('helvetica', 'bold');
+          doc.text('OWASP Category:', margin + 5, y);
+          doc.setFont('helvetica', 'normal');
+          if (v.owasp_category) doc.text(v.owasp_category, margin + 50, y);
+          y += 8;
+
+          doc.setFont('helvetica', 'bold');
+          doc.text('Description:', margin + 5, y);
+          y += 6;
+
+          // Handle multi-line description
+          doc.setFont('helvetica', 'normal');
+          const splitDescription = doc.splitTextToSize(v.description, contentWidth - 10);
+          doc.text(splitDescription, margin + 5, y);
+          y += splitDescription.length * 5 + 5;
+
+          doc.setFont('helvetica', 'bold');
+          doc.text('Solution:', margin + 5, y);
+          y += 6;
+
+          // Handle multi-line solution
+          doc.setFont('helvetica', 'normal');
+          const splitSolution = doc.splitTextToSize(v.solution, contentWidth - 10);
+          doc.text(splitSolution, margin + 5, y);
+          y += splitSolution.length * 5 + 20;
+        });
+      }
+
+      // Add false positives section
+      if (falsePositives.length > 0) {
+        checkForNewPage(20);
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(colors.falsePositive[0], colors.falsePositive[1], colors.falsePositive[2]);
+        doc.text('2. False Positives', margin, y);
+
+        // Store location for links
+        falsePositivesPage = currentPage;
+        falsePositivesY = y;
+
+        y += 10;
+
+        // Render false positives
+        falsePositives.forEach((v, index) => {
+          // Check if we need a new page
+          checkForNewPage(90);
+
+          // Background for each vulnerability
+          doc.setFillColor(245, 245, 245);
+          doc.roundedRect(margin, y, contentWidth, 75, 3, 3, 'F');
+
+          // Title with colored background
+          doc.setFillColor(colors.falsePositive[0], colors.falsePositive[1], colors.falsePositive[2]);
+          doc.roundedRect(margin, y, contentWidth, 10, 3, 3, 'F');
+
+          // Title text
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text(`Vulnerability ${index + 1}: ${v.alert}`, margin + 5, y + 7);
+          y += 15;
+
+          // Content
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Risk:', margin + 5, y);
+          doc.setFont('helvetica', 'normal');
+
+          // Color for risk level
+          let riskColor = colors.low;
+          if (v.risk === 'High') riskColor = colors.high;
+          else if (v.risk === 'Medium') riskColor = colors.medium;
+
+          doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
+          doc.text(v.risk, margin + 30, y);
+          y += 8;
+
+          doc.setTextColor(0, 0, 0);
+          doc.setFont('helvetica', 'bold');
+          doc.text('OWASP Category:', margin + 5, y);
+          doc.setFont('helvetica', 'normal');
+          if (v.owasp_category) doc.text(v.owasp_category, margin + 50, y);
+          y += 8;
+
+          doc.setFont('helvetica', 'bold');
+          doc.text('Description:', margin + 5, y);
+          y += 6;
+
+          // Handle multi-line description
+          doc.setFont('helvetica', 'normal');
+          const splitDescription = doc.splitTextToSize(v.description, contentWidth - 10);
+          doc.text(splitDescription, margin + 5, y);
+          y += splitDescription.length * 5 + 5;
+
+          doc.setFont('helvetica', 'bold');
+          doc.text('Solution:', margin + 5, y);
+          y += 6;
+
+          // Handle multi-line solution
+          doc.setFont('helvetica', 'normal');
+          const splitSolution = doc.splitTextToSize(v.solution, contentWidth - 10);
+          doc.text(splitSolution, margin + 5, y);
+          y += splitSolution.length * 5 + 20;
+        });
+      }
+
+      // Now add the links
+      // Go back to page 1 to add links
+      doc.setPage(1);
+
+      // Add links in the summary box
+      const summaryY = 40;
+
+      // Add link for True Positives in summary
+      if (truePositives.length > 0) {
+        const truePositivesLink = {
+          pageNumber: truePositivesPage,
+          y: truePositivesY
+        };
+        doc.link(margin + 5, summaryY + 15, doc.getTextWidth("1. True Positives"), 10, truePositivesLink);
+
+        // Add link in table of contents
+        doc.link(margin + 5, tocTruePositivesY - 5, doc.getTextWidth("1. True Positives"), 8, truePositivesLink);
+      }
+
+      // Add link for False Positives in summary
+      if (falsePositives.length > 0) {
+        const falsePositivesLink = {
+          pageNumber: falsePositivesPage,
+          y: falsePositivesY
+        };
+        doc.link(linkXPos, summaryY + 15, doc.getTextWidth("2. False Positives"), 10, falsePositivesLink);
+
+        // Add link in table of contents
+        doc.link(margin + 5, tocFalsePositivesY - 5, doc.getTextWidth("2. False Positives"), 8, falsePositivesLink);
+      }
+
+      // Add page numbers
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Page ${i} of ${totalPages}`, pageWidth - 28, pageHeight - 10);
+      }
+
+      // Save the PDF
+      doc.save(`secufusion-scan-${new Date().toISOString().split('T')[0]}.pdf`);
+    }).catch(err => {
+      console.error("Failed to load jsPDF library:", err);
+    });
   };
 
   const handleBackToHome = () => {
-    // In a real application, this would navigate back to the home page
-    // For this example, we'll just show an alert
-    alert('Navigating back to home page...');
-    // In a real React app with React Router, you would use:
-    // navigate('/') or history.push('/') or similar
+    const flag = confirm('Do you want to download the report?');
+    if (flag) handleDownloadReport();
+    navigator('/');
   };
 
   if (isLoading) {
     return (
       <div className="scan-results-page">
         <div className="scan-results-container">
-          <div className="header-navigation">
-            <Link to={'/'}>
-              <button className="back-button">
-                <span className="back-icon">←</span> Back to Home
-              </button>
-            </Link>
-            <h1>SecuFusion Scan Results</h1>
-          </div>
-  
-          {/* Centered Loader */}
+          <button className="back-button2" onClick={handleBackToHome}>
+            ← Back to Home
+          </button>
+          <h1>SecuFusion Scan Results</h1>
           <div className="loading">
             <div className="three-body">
               <div className="three-body__dot"></div>
@@ -239,12 +420,10 @@ const ScanResultsPage = ({ scanData = null }) => {
     return (
       <div className="scan-results-page">
         <div className="scan-results-container">
-          <div className="header-navigation">
-            <button className="back-button" onClick={handleBackToHome}>
-              <span className="back-icon">←</span> Back to Home
-            </button>
-            <h1>SecuFusion Scan Results</h1>
-          </div>
+          <button className="back-button2" onClick={handleBackToHome}>
+            ← Back to Home
+          </button>
+          <h1>SecuFusion Scan Results</h1>
           <div className="error-message">
             <p>{error}</p>
             <button className="primary-button" onClick={handleBackToHome}>
@@ -256,37 +435,56 @@ const ScanResultsPage = ({ scanData = null }) => {
     );
   }
 
+  const filterCriteria = {
+    total: () => vulnerabilities,
+    truePositives: () => vulnerabilities.filter(v => v.prediction === 0),
+    falsePositives: () => vulnerabilities.filter(v => v.prediction === 1),
+    highRisk: () => vulnerabilities.filter(v => v.risk?.toLowerCase() === 'high'),
+  };
+
+  const handleFilter = (criteria) => {
+    if (filterCriteria[criteria]) {
+      setvuln(filterCriteria[criteria]());
+    } else {
+      console.error("Invalid filter criteria");
+    }
+  };
+
+
   return (
     <div className="scan-results-page">
       <div className="scan-results-container">
-        <div className="header-navigation">
-        <Link to={'/'}><button className="back-button">
-            <span className="back-icon">←</span> Back to Home 
-          </button></Link>
-          <h1>SecuFusion Scan Results</h1>
+        <div className='flex justify-between'>
+          <button className="back-button2" onClick={handleBackToHome}>
+            ← Back to Home
+          </button>
+          <button className="download-button" onClick={handleDownloadReport}>
+            Download Report
+          </button>
         </div>
+        <h1>SecuFusion Scan Results</h1>
 
         <div className="scan-summary">
-          <div className="summary-item">
+          <div onClick={() => handleFilter("total")} className="summary-item">
             <h3>Total Vulnerabilities</h3>
             <p>{vulnerabilities.length}</p>
           </div>
-          <div className="summary-item">
+          <div onClick={() => handleFilter("truePositives")} className="summary-item">
             <h3>True Positives</h3>
             <p>{vulnerabilities.filter(v => v.prediction === 0).length}</p>
           </div>
-          <div className="summary-item">
+          <div onClick={() => handleFilter("falsePositives")} className="summary-item">
             <h3>False Positives</h3>
             <p>{vulnerabilities.filter(v => v.prediction === 1).length}</p>
           </div>
-          <div className="summary-item">
+          <div onClick={() => handleFilter("highRisk")} className="summary-item">
             <h3>High Risk</h3>
-            <p>{vulnerabilities.filter(v => v.risk.toLowerCase() === 'high').length}</p>
+            <p>{vulnerabilities.filter(v => v.risk?.toLowerCase() === 'high').length}</p>
           </div>
         </div>
 
         <div className="vulnerabilities-grid">
-          {vulnerabilities.map((vuln, index) => (
+          {vuln.map((vuln, index) => (
             <div key={index} className="vulnerability-card">
               <div className={`vulnerability-header ${getRiskClass(vuln.risk)}`}>
                 <h3>{vuln.alert}</h3>
@@ -319,7 +517,7 @@ const ScanResultsPage = ({ scanData = null }) => {
                 </div>
                 <div className="vulnerability-status">
                   <span className={vuln.prediction === 1 ? "false-positive-badge" : "true-positive-badge"}>
-                    {vuln.prediction === 1 ? "⚠️ False Positive" : "❌ True Positive"}
+                    {vuln.prediction === 1 ? "⚠️ False Positive" : "✅ True Positive"}
                   </span>
                 </div>
               </div>
